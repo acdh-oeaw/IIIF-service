@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "iipimage.fullname" . }}-iipsrv
+  labels:
+    {{- include "iipimage.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "iipimage.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: iipsrv
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "iipimage.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: iipsrv
+    spec:
+      containers:
+      - env:
+        - name: FILESYSTEM_PREFIX
+          value: /data/forIIIF/
+        - name: JPEG_QUALITY
+          value: "50"
+        - name: LOGFILE
+          value: /dev/stdout
+        - name: MAX_IMAGE_CACHE_SIZE
+          value: "128"
+        - name: MEMCACHED_SERVERS
+          value: {{ include "iipimage.fullname" . }}-memcached
+        - name: URI_MAP
+          value: iiif/images=>IIIF
+        - name: VERBOSITY
+          value: "5"
+        image: "acdhch/iipsrv:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: IfNotPresent
+        name: {{ .Chart.Name }}-iipsrv
+        ports:
+        - containerPort: 9000
+          name: iipsrv
+          protocol: TCP
+        resources: {}
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+        stdin: true
+        tty: true
+        volumeMounts:
+        - mountPath: /data
+          name: image-data
+          subPath: {{ .Release.Name }}
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - args:
+        - mkdir -p /data/forIIIF && chown -R 100:82 /data && chmod -R g+w /data
+        command:
+        - /bin/sh
+        - -c
+        image: busybox
+        imagePullPolicy: Always
+        name: {{ .Chart.Name }}-iipsrv-create-foriiif
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /data
+          name: image-data
+          subPath: {{ .Release.Name }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: image-data
+        persistentVolumeClaim:
+          claimName: iiif-picture-storage

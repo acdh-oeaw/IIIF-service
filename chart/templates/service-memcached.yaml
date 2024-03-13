@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "iipimage.fullname" . }}-memcached
+  labels:
+    {{- include "iipimage.labels" . | nindent 4 }}
+    app.kubernetes.io/component: memcached-svc
+spec:
+  ports:
+  - name: memcached
+    port: 11211
+    protocol: TCP
+    targetPort: 11211
+  selector:
+    {{- include "iipimage.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: memcached
+  type: ClusterIP

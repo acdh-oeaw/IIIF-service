@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "iipimage.fullname" . }}-node
+  labels:
+    {{- include "iipimage.labels" . | nindent 4 }}
+    app.kubernetes.io/component: node-svc
+spec:
+  ports:
+  - name: node
+    port: 3000
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    {{- include "iipimage.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: node
+  type: ClusterIP

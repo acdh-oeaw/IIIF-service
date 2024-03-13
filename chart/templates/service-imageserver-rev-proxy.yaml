@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "iipimage.fullname" . }}-imageserver-rev-proxy
+  labels:
+    {{- include "iipimage.labels" . | nindent 4 }}
+    app.kubernetes.io/component: imageserver-rev-proxy-svc
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    {{- include "iipimage.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: imageserver-rev-proxy
+  type: ClusterIP

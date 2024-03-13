@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "iipimage.fullname" . }}-imageserver-rev-proxy
+  labels:
+    {{- include "iipimage.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "iipimage.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: imageserver-rev-proxy
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "iipimage.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: imageserver-rev-proxy
+    spec:
+      containers:
+      - env:
+        - name: IIPSRV
+          value: {{ include "iipimage.fullname" . }}-iipsrv
+        - name: NODESRV
+          value: {{ include "iipimage.fullname" . }}-node
+        - name: DEFAULT_COLLECTION
+          value: "{{ .Values.iiifDefaultCollection }}"
+        image: acdhch/imageserver-rev-proxy
+        imagePullPolicy: Always
+        name: imageserver-rev-proxy
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        resources: {}
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+        tty: true
+        volumeMounts:
+        - mountPath: /mnt/data
+          name: image-data
+          subPath: {{ .Release.Name }}
+        - mountPath: /var/tmp
+          name: lighttpd-tmp
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: image-data
+        persistentVolumeClaim:
+          claimName: iiif-picture-storage
+      - emptyDir: {}
+        name: lighttpd-tmp

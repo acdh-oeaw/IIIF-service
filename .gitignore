@@ -1,0 +1,5 @@
+**/node_modules
+**/pnpm-lock.yaml
+mirador/dist
+htdocs/uv/umd
+htdocs
