@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <link rel="icon" href="uv/favicon.ico" />
+    <title>
+      <!--#echo var="DEFAULT_COLLECTION" --> Collection UniversalViewer
+    </title>
+    <link rel="stylesheet" href="uv/uv.css" />
+    <script type="application/javascript" src="uv/umd/UV.js"></script>
+    <style>
+      body,
+      html {
+        height: 100%;
+        margin: 0 0 0 0;
+      }
+      #uv {
+        width: 100%;
+        height: calc(100% - 28px);
+      }
+      #more {
+        height: 28px;
+        width: 100%;
+        line-height: 28px;
+        line-indent: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="uv" id="uv"></div>
+    <div id="more" class="more">
+      <a href="more.html">Here are some more options ...</a>
+    </div>
+    <script>
+      var urlAdapter = new UV.IIIFURLAdapter();
+
+      const data = urlAdapter.getInitialData({
+        manifest:
+          '/iiif/presentation/collection/<!--#echo var="DEFAULT_COLLECTION" -->',
+      });
+
+      uv = UV.init("uv", data);
+      urlAdapter.bindTo(uv);
+      // uv.on("created", function (obj) {
+      //   console.log(
+      //     "parsed metadata",
+      //     uv.extension.helper.manifest.getMetadata()
+      //   );
+      //   console.log("raw jsonld", uv.extension.helper.manifest.__jsonld);
+      // });
+      uv.on("configure", function ({ config, cb }) {
+        const manifest = urlAdapter.get("iiifManifestId");
+        cb({
+          options: {
+            zoomToSearchResultEnabled: false,
+          },
+          modules: {
+            contentLeftPanel: {
+              options: {
+                autoExpandTreeEnabled: false,
+                defaultToTreeEnabled: true,
+              },
+            },
+          },
+        });
+      });
+    </script>
+  </body>
+</html>

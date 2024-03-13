@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><!--#echo var="DEFAULT_COLLECTION" --> Mirador 3 Viewer with mirador image tools</title>
+    <style>
+      html {
+        width: 100%;
+        height: 100%
+      }
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0 0 0 0;
+      }
+      #mirador-container {
+        position: relative;
+        height: calc(100% - 1.5em);
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <script>    
+const config = {
+  id: 'mirador3',
+  windows: [{
+    imageToolsEnabled: true,
+    imageToolsOpen: true,
+    manifestId: '/iiif/presentation/collection/<!--#echo var="DEFAULT_COLLECTION" -->',
+  }],
+  theme: {
+    palette: {
+      primary: {
+        main: '#1967d2',
+      },
+    },
+  },
+};
+    </script>
+    <div id="mirador-container">
+      <div id="mirador3"></div>
+    </div>
+    <script src="dist/main.js"></script>
+    <div id=footer><a href="more.html">Here are some more options ...</a></div>
+  </body>
+</html>
