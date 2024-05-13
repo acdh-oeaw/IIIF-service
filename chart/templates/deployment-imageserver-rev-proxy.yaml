@@ -82,6 +82,6 @@ spec:
       volumes:
       - name: image-data
         persistentVolumeClaim:
-          claimName: iiif-picture-storage
+          claimName: {{ .Values.persistence.imageStoragePVC }}
       - emptyDir: {}
         name: lighttpd-tmp

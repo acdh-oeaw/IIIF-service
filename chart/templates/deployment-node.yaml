@@ -11,7 +11,7 @@ spec:
   selector:
     matchLabels:
       {{- include "iipimage.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/component: node
+      app.kubernetes.io/component: {{ .Chart.Name }}-node
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -20,26 +20,25 @@ spec:
       {{- end }}
       labels:
         {{- include "iipimage.selectorLabels" . | nindent 8 }}
-        app.kubernetes.io/component: node
+        app.kubernetes.io/component: {{ .Chart.Name }}-node
     spec:
       containers:
-      - env:
-        - name: IIIF_DATA_PATH
-          value: /data/forIIIF
-        - name: IMAGE_DATA_PATH
-          value: /data/upload
-        - name: IMAGE_MD5_CHECKSUMS_PATH
-          value: /data/upload/md5
+      - name: {{ .Chart.Name }}-node
+#        image: {{ template "iipimage.imagename" . }}
+        image: ghcr.io/acdh-oeaw/jpeg2000-conversion-and-iiif-presentation/jp2-conv-iiif-pres
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.application.secretName }}
+        envFrom:
+        - secretRef:
+            name: {{ .Values.application.secretName }}
+{{- if .Values.extraEnvFrom }}
+{{- toYaml .Values.extraEnvFrom | nindent 8 }}
+{{- end }}
+        {{- end }}
+        env:
         - name: MEMCACHED_SERVERS
           value: {{ include "iipimage.fullname" . }}-memcached
-        - name: NO_VALIDATION_AT_STARTUP
-          value: "true"
-        - name: DEFAULT_COLLECTION
-          value: "{{ .Values.iiifDefaultCollection }}"
-        image: "ghcr.io/acdh-oeaw/jpeg2000-conversion-and-iiif-presentation/jp2-conv-iiif-pres"
 # {{ .Values.image.tag }}
-        imagePullPolicy: IfNotPresent
-        name: node
         ports:
         - containerPort: 3000
           name: node
@@ -95,4 +94,4 @@ spec:
       volumes:
       - name: image-data
         persistentVolumeClaim:
-          claimName: iiif-picture-storage
+          claimName: {{ .Values.persistence.imageStoragePVC }}

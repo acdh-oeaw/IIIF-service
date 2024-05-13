@@ -11,7 +11,7 @@ spec:
   selector:
     matchLabels:
       {{- include "iipimage.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/component: iipsrv
+      app.kubernetes.io/component: {{ .Chart.Name }}-iipsrv
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -20,12 +20,22 @@ spec:
       {{- end }}
       labels:
         {{- include "iipimage.selectorLabels" . | nindent 8 }}
-        app.kubernetes.io/component: iipsrv
+        app.kubernetes.io/component: {{ .Chart.Name }}-iipsrv
     spec:
       containers:
-      - env:
-        - name: FILESYSTEM_PREFIX
-          value: /data/forIIIF/
+      - name: {{ .Chart.Name }}-iipsrv
+#        image: {{ template "iipimage.imagename" . }}
+        image: "ghcr.io/acdh-oeaw/iipsrv/iipsrv"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.application.secretName }}
+        envFrom:
+        - secretRef:
+            name: {{ .Values.application.secretName }}
+{{- if .Values.extraEnvFrom }}
+{{- toYaml .Values.extraEnvFrom | nindent 8 }}
+{{- end }}
+        {{- end }}
+        env:
         - name: JPEG_QUALITY
           value: "50"
         - name: LOGFILE
@@ -38,10 +48,7 @@ spec:
           value: iiif/images=>IIIF
         - name: VERBOSITY
           value: "5"
-        image: "ghcr.io/acdh-oeaw/iipsrv/iipsrv"
 # {{ .Values.image.tag | default .Chart.AppVersion }}
-        imagePullPolicy: IfNotPresent
-        name: {{ .Chart.Name }}-iipsrv
         ports:
         - containerPort: 9000
           name: iipsrv
@@ -92,4 +99,4 @@ spec:
       volumes:
       - name: image-data
         persistentVolumeClaim:
-          claimName: iiif-picture-storage
+          claimName: {{ .Values.persistence.imageStoragePVC }}
