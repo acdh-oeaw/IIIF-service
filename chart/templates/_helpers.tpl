@@ -68,3 +68,10 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Get a hostname from URL
+*/}}
+{{- define "iipimage.hostname" -}}
+{{- . | trimPrefix "http://" |  trimPrefix "https://" | trimSuffix "/" | trim | quote -}}
+{{- end -}}
