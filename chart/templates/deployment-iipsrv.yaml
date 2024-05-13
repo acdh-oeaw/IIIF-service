@@ -66,7 +66,7 @@ spec:
       dnsPolicy: ClusterFirst
       initContainers:
       - args:
-        - mkdir -p /data/forIIIF && chown -R 100:82 /data && chmod -R g+w /data
+        - mkdir -p /data/forIIIF && chown -R 100:82 /data/forIIIF && chmod -R g+w /data/forIIIF
         command:
         - /bin/sh
         - -c
