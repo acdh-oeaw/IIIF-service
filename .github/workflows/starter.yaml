@@ -105,4 +105,4 @@ jobs:
       PUBLIC_URL: ${{ needs.generate_workflow_vars.outputs.PUBLIC_URL }}
       POSTGRES_ENABLED: ${{ needs.setup_workflow_env.outputs.POSTGRES_ENABLED == 'true'}}
       default_port: "${{ needs.setup_workflow_env.outputs.default_port}}"
-       submodules: ${{ needs.setup_workflow_env.outputs.submodules }}
+      submodules: ${{ needs.setup_workflow_env.outputs.submodules }}
