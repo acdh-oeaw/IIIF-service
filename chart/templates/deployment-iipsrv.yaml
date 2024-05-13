@@ -38,7 +38,8 @@ spec:
           value: iiif/images=>IIIF
         - name: VERBOSITY
           value: "5"
-        image: "acdhch/iipsrv:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        image: "ghcr.io/acdh-oeaw/iipsrv/iipsrv"
+# {{ .Values.image.tag | default .Chart.AppVersion }}
         imagePullPolicy: IfNotPresent
         name: {{ .Chart.Name }}-iipsrv
         ports:

@@ -42,6 +42,14 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
+{{- define "iipimage.imagename" -}}
+{{- if eq .Values.image.tag "" -}}
+{{- .Values.image.repository -}}
+{{- else -}}
+{{- printf "%s:%s" .Values.image.repository .Values.image.tag -}}
+{{- end -}}
+{{- end -}}
+
 {{/*
 Selector labels
 */}}
