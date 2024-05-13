@@ -50,14 +50,12 @@ spec:
           privileged: false
           readOnlyRootFilesystem: true
           runAsNonRoot: true
-        stdin: true
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
-        tty: true
         volumeMounts:
         - mountPath: /data
           name: image-data
-          subPath: {{ .Release.Name }}
+          subPath: {{ kindIs "string" .Values.persistence.imageStorageSubPath | ternary .Values.persistence.imageStorageSubPath .Release.Name | quote }}
       dnsPolicy: ClusterFirst
       initContainers:
       - args:
@@ -74,7 +72,7 @@ spec:
         volumeMounts:
         - mountPath: /data
           name: image-data
-          subPath: {{ .Release.Name }}
+          subPath: {{ kindIs "string" .Values.persistence.imageStorageSubPath | ternary .Values.persistence.imageStorageSubPath .Release.Name | quote }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

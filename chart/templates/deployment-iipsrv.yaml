@@ -62,7 +62,7 @@ spec:
         volumeMounts:
         - mountPath: /data
           name: image-data
-          subPath: {{ .Release.Name }}
+          subPath: {{ kindIs "string" .Values.persistence.imageStorageSubPath | ternary .Values.persistence.imageStorageSubPath .Release.Name | quote }}
       dnsPolicy: ClusterFirst
       initContainers:
       - args:
@@ -72,6 +72,14 @@ spec:
         - -c
         image: busybox
         imagePullPolicy: Always
+        {{- if .Values.application.secretName }}
+        envFrom:
+        - secretRef:
+            name: {{ .Values.application.secretName }}
+{{- if .Values.extraEnvFrom }}
+{{- toYaml .Values.extraEnvFrom | nindent 8 }}
+{{- end }}
+        {{- end }}
         name: {{ .Chart.Name }}-iipsrv-create-foriiif
         resources: {}
         terminationMessagePath: /dev/termination-log
@@ -79,7 +87,7 @@ spec:
         volumeMounts:
         - mountPath: /data
           name: image-data
-          subPath: {{ .Release.Name }}
+          subPath: {{ kindIs "string" .Values.persistence.imageStorageSubPath | ternary .Values.persistence.imageStorageSubPath .Release.Name | quote }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -59,7 +59,7 @@ spec:
         volumeMounts:
         - mountPath: /mnt/data
           name: image-data
-          subPath: {{ .Release.Name }}
+          subPath: {{ kindIs "string" .Values.persistence.imageStorageSubPath | ternary .Values.persistence.imageStorageSubPath .Release.Name | quote }}
         - mountPath: /var/tmp
           name: lighttpd-tmp
       {{- with .Values.nodeSelector }}

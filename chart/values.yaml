@@ -85,3 +85,4 @@ affinity: {}
 
 persistence:
   imageStoragePVC: iiif-picture-storage
+#  imageStorageSubPath:
