@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "iipimage.fullname" . }}-imageserver-rev-proxy
+  name: {{ include "iipimage.fullname" . }}-rev-proxy
   labels:
     {{- include "iipimage.labels" . | nindent 4 }}
     app.kubernetes.io/component: {{ .Chart.Name }}-rev-proxy-svc
