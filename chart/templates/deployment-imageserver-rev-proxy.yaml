@@ -57,7 +57,7 @@ spec:
           runAsNonRoot: true
         tty: true
         volumeMounts:
-        - mountPath: /mnt/data
+        - mountPath: /data
           name: image-data
           subPath: {{ kindIs "string" .Values.persistence.imageStorageSubPath | ternary .Values.persistence.imageStorageSubPath .Release.Name | quote }}
         - mountPath: /var/tmp
