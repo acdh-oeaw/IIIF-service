@@ -1,16 +1,15 @@
 # Default values for iipimage.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
-iiifDefaultCollection: default
-
 replicaCount: 1
 
 image:
-  repository: nginx
-  pullPolicy: IfNotPresent
+  repository: ghcr.io/acdh-oeaw/iiif-service/iiif-service
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest-sse4_1"
+  tag: "latest"
+application:
+  secretName:
 
 imagePullSecrets: []
 nameOverride: ""
@@ -43,21 +42,13 @@ service:
 
 ingress:
   enabled: true
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: shahi-img.acdh-dev.oeaw.ac.at
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
-#  tls:
-#    - acme: true
-#      hosts:
-#        - chart-example.local
-#      secretName: chart-example-tls
+  path: "/"
+  tls:
+    enabled: true
+    acme: true
+    secretName: ""
+    useDefaultSecret: false
+  # className: nginxingress:
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -83,3 +74,7 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+persistence:
+  imageStoragePVC: iiif-picture-storage
+#  imageStorageSubPath:

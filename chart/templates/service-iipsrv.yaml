@@ -4,7 +4,7 @@ metadata:
   name: {{ include "iipimage.fullname" . }}-iipsrv
   labels:
     {{- include "iipimage.labels" . | nindent 4 }}
-    app.kubernetes.io/component: iipsrv-svc
+    app.kubernetes.io/component: {{ .Chart.Name }}-iipsrv-svc
 spec:
   ports:
   - name: iipsrv
@@ -13,5 +13,5 @@ spec:
     targetPort: 9000
   selector:
     {{- include "iipimage.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: iipsrv
+    app.kubernetes.io/component: {{ .Chart.Name }}-iipsrv
   type: ClusterIP

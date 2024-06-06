@@ -21,7 +21,7 @@ jobs:
 # with org/repo-name (all lower case).
 # E. g. ACDH-OEAW/OpenAtlas-Discovery -> acdh-oeaw/openatlas-discovery
       registry_root: ghcr.io/${{ github.repository }}/
-      default_port: "9000"
+      default_port: "8080"
 # Usually you don't deal with all commits since the repository was created.
 # Increase if you e.g don't find a tag you want to display in the application
       fetch-depth: 1
@@ -91,18 +91,18 @@ jobs:
 #       POSTGRES_ENABLED: ${{ needs.setup_workflow_env.outputs.POSTGRES_ENABLED }}
 #       PUBLIC_URL: ${{ needs.generate_workflow_vars.outputs.PUBLIC_URL }}
 #       submodules: ${{ needs.setup_workflow_env.outputs.submodules }}
-#   _3:
-#     needs: [setup_workflow_env, generate_workflow_vars, _1, _2]
-#     uses: acdh-oeaw/gl-autodevops-minimal-port/.github/workflows/deploy.yml@main
-#     secrets: inherit
-#     with:
-#       environment: ${{ needs.setup_workflow_env.outputs.environment}}
-#       fetch-depth: ${{ fromJson(needs.setup_workflow_env.outputs.fetch-depth) }}
-#       DOCKER_TAG: ${{ needs.setup_workflow_env.outputs.registry_root }}${{ needs.setup_workflow_env.outputs.image_name }}
-#       APP_NAME: ${{ needs.setup_workflow_env.outputs.APP_NAME }}-${{ needs.setup_workflow_env.outputs.environment_short }}
-#       APP_ROOT: ${{ needs.setup_workflow_env.outputs.APP_ROOT }}
-#       SERVICE_ID: ${{ needs.setup_workflow_env.outputs.SERVICE_ID }}
-#       PUBLIC_URL: ${{ needs.generate_workflow_vars.outputs.PUBLIC_URL }}
-#       POSTGRES_ENABLED: ${{ needs.setup_workflow_env.outputs.POSTGRES_ENABLED == 'true'}}
-#       default_port: "${{ needs.setup_workflow_env.outputs.default_port}}"
-#       submodules: ${{ needs.setup_workflow_env.outputs.submodules }}
+  _3:
+    needs: [setup_workflow_env, generate_workflow_vars, _1]
+    uses: acdh-oeaw/gl-autodevops-minimal-port/.github/workflows/deploy.yml@main
+    secrets: inherit
+    with:
+      environment: ${{ needs.setup_workflow_env.outputs.environment}}
+      fetch-depth: ${{ fromJson(needs.setup_workflow_env.outputs.fetch-depth) }}
+      DOCKER_TAG: ${{ needs.setup_workflow_env.outputs.registry_root }}${{ needs.setup_workflow_env.outputs.image_name }}
+      APP_NAME: ${{ needs.setup_workflow_env.outputs.APP_NAME }}-${{ needs.setup_workflow_env.outputs.environment_short }}
+      APP_ROOT: ${{ needs.setup_workflow_env.outputs.APP_ROOT }}
+      SERVICE_ID: ${{ needs.setup_workflow_env.outputs.SERVICE_ID }}
+      PUBLIC_URL: ${{ needs.generate_workflow_vars.outputs.PUBLIC_URL }}
+      POSTGRES_ENABLED: ${{ needs.setup_workflow_env.outputs.POSTGRES_ENABLED == 'true'}}
+      default_port: "${{ needs.setup_workflow_env.outputs.default_port}}"
+      submodules: ${{ needs.setup_workflow_env.outputs.submodules }}
