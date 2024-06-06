@@ -12,7 +12,7 @@ RUN apk update && \
      cd /app/mirador && pnpm install && pnpm run build
 
 
-FROM alpine:3.19
+FROM alpine:3.20
 
 # inspired by https://github.com/m4rcu5nl/docker-lighttpd-alpine
 LABEL maintainer="Omar Siam <omar.siam@oeaw.ac.at>" \
