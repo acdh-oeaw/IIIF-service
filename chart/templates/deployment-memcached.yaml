@@ -23,7 +23,7 @@ spec:
         app.kubernetes.io/component: memcached
     spec:
       containers:
-      - image: memcached:alpine
+      - image: memcached:1.6-alpine3.20
         imagePullPolicy: Always
         name: memcached
         ports:

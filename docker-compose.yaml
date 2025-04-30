@@ -1,0 +1,70 @@
+services:
+  memcached:
+    image: "memcached:1.6-alpine3.20"
+    networks:
+      - backend
+  iipsrv:
+    image: "ghcr.io/acdh-oeaw/iipsrv/iipsrv:latest"
+    networks:
+      - backend
+    environment:
+      LOGFILE: "/dev/stdout"
+      MEMCACHED_SERVERS: "memcached"
+      VERBOSITY: "5"
+      MAX_IMAGE_CACHE_SIZE: "10"
+      JPEG_QUALITY: "50"
+      URI_MAP: "iiif/images=>IIIF"
+#      WATERMARK: "/mnt/data/forIIIF/WBOE.tif"
+#      WATERMARK_OPACITY: "0.1"
+#      WATERMARK_PROBABILITY: "0.08"
+    volumes:
+      - "image-data:/mnt/data"
+  node:
+    image: "ghcr.io/acdh-oeaw/jpeg2000-conversion-and-iiif-presentation/jp2-conv-iiif-pres:latest"
+    volumes:
+      - "image-data:/mnt/data"
+      - "node-app:/app"
+    networks:
+      - backend
+    environment:
+      MEMCACHED_SERVERS: "memcached"
+  web:
+    image: "ghcr.io/acdh-oeaw/iiif-service/iiif-service:latest"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    ports:
+    # the port is hard coded as a default for localhost developmentin
+    # in the node app
+      - 8080:8080
+    environment:
+      IIPSRV: "iipsrv"
+      NODESRV: "node"
+    volumes:
+#      - "lighttpd-config:/etc/lighttpd"
+      - "image-data:/mnt/data"
+networks:
+  backend:
+    driver: bridge
+volumes:
+  lighttpd-config:
+    driver: local
+    driver_opts:
+      type: "none"
+      device: "${HOME}/WebProjects/IIIF-service/config/lighttpd"
+      o: "bind"
+  image-data:
+# needs to be writeable by user 3000 group 82 (node user) and readable by group 82 (www-data)
+    driver: local
+    driver_opts:
+      type: "none"
+      device: "${HOME}/WebProjects/image-data"
+      o: "bind"
+  node-app:
+    driver: local
+    driver_opts:
+      type: "none"
+      device: "${HOME}/WebProjects/JPEG2000-conversion-and-IIIF-presentation"
+      o: "bind"
