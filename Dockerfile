@@ -34,7 +34,10 @@ RUN apk update && \
     sed -i s/100:101/100:82/ /etc/passwd
 # change the primary group of lighttpd to www-data
 COPY --from=builder /versions /
-COPY --from=builder /app/uv/node_modules/universalviewer/dist /var/www/htdocs/uv
+# Official distribution
+# COPY --from=builder /app/uv/node_modules/universalviewer/dist /var/www/htdocs/uv
+# Patched for better, wider thumbnail view
+COPY --from=builder /app/uv/dist /var/www/htdocs/uv
 COPY --from=builder /app/mirador/dist /var/www/htdocs/dist
 COPY config/lighttpd/*.sh /
 COPY config/lighttpd/*.conf /etc/lighttpd/
